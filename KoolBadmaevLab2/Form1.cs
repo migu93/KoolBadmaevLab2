@@ -201,31 +201,6 @@ namespace KoolBadmaevLab2
         }
         #endregion
 
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            var random = new Random();
-
-            var spline = new CPoint[points.Count];
-            var interval = (pictureBox1.Width - 20) / points.Count;
-
-            for (var i = 0; i < points.Count; i++)
-            {
-                spline[i] = new CPoint(points[i].X, points[i].Y);
-            }
-
-            _model = new CSpline(spline);
-
-            vScrollBar1.Value = 0;
-            vScrollBar2.Value = 0;
-
-            if (points.Count > 1)
-            {
-                SetD1ToModel();
-                GetDerivatesFromModel();
-                Draw();
-            }
-        }
-
         private void vScrollBar1_ValueChanged(object sender, EventArgs e)
         {
             if (_model != null && points.Count > 1)
@@ -289,6 +264,7 @@ namespace KoolBadmaevLab2
             }
         }
 
+
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             Graphics g = pictureBox1.CreateGraphics();
@@ -334,6 +310,31 @@ namespace KoolBadmaevLab2
                     g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                     curve.DrawN(g, ColorLine);
                 }
+            }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            var random = new Random();
+
+            var spline = new CPoint[points.Count];
+            var interval = (pictureBox1.Width - 20) / points.Count;
+
+            for (var i = 0; i < points.Count; i++)
+            {
+                spline[i] = new CPoint(points[i].X, points[i].Y);
+            }
+
+            _model = new CSpline(spline);
+
+            vScrollBar1.Value = 0;
+            vScrollBar2.Value = 0;
+
+            if (points.Count > 1)
+            {
+                SetD1ToModel();
+                GetDerivatesFromModel();
+                Draw();
             }
         }
     }
