@@ -1,4 +1,5 @@
 using KoolBadmaevLab2;
+using System.Runtime.ConstrainedExecution;
 using System.Windows.Forms;
 
 namespace KoolBadmaevLab2
@@ -100,7 +101,7 @@ namespace KoolBadmaevLab2
             }
         }
 
-        public static void DrawWuLine(Graphics g, Color clr, int x0, int y0, int x1, int y1)
+        public void DrawWuLine(Graphics g, Color clr, int x0, int y0, int x1, int y1)
         {
             //Вычисление изменения координат
             int dx = (x1 > x0) ? (x1 - x0) : (x0 - x1);
@@ -113,7 +114,7 @@ namespace KoolBadmaevLab2
             }
 
             //Для Х-линии (коэффициент наклона < 1)
-            if (dy < dx)
+            if (true)
             {
                 //Первая точка должна иметь меньшую координату Х
                 if (x1 < x0)
@@ -170,14 +171,15 @@ namespace KoolBadmaevLab2
             }
 
         }
+        public void PutPixel2(Graphics g, Color color, int x, int y, int alpha)
+        {
+
+        }
 
         #region Splines
 
         private void SetD1ToModel()
         {
-            _model.Df1 = (double)vScrollBar1.Value / 1000;
-            _model.Dfn = (double)vScrollBar2.Value / 1000;
-
             _model.GenerateSplines(ColorLine);
         }
 
@@ -264,9 +266,84 @@ namespace KoolBadmaevLab2
             }
         }
 
-
-        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        static void DrawLineInt(Graphics g, Point startPoint, Point endPoint, Color color)
         {
+            SolidBrush brush = new SolidBrush(color);
+            // Calculate the delta values for the x and y axes
+            int deltaX = Math.Abs(endPoint.X - startPoint.X);
+            int deltaY = Math.Abs(endPoint.Y - startPoint.Y);
+
+            // Set the initial values for the x and y axes
+            int x = startPoint.X;
+            int y = startPoint.Y;
+
+            // Set the step values for the x and y axes
+            int stepX = (startPoint.X < endPoint.X) ? 1 : -1;
+            int stepY = (startPoint.Y < endPoint.Y) ? 1 : -1;
+
+            // Set the value for the decision parameter
+            int decision;
+
+            // Check if the line is steep (more than 45 degrees)
+            if (deltaY > deltaX)
+            {
+                // Swap the x and y values and the delta values
+                int temp = deltaX;
+                deltaX = deltaY;
+                deltaY = temp;
+                temp = x;
+                x = y;
+                y = temp;
+                temp = stepX;
+                stepX = stepY;
+                stepY = temp;
+
+                // Set the initial value for the decision parameter
+                decision = 2 * deltaY - deltaX;
+
+                // Loop through the points along the x axis
+                for (int i = 0; i <= deltaX; i++)
+                {
+                    // Draw the current point
+                    g.FillRectangle(Brushes.Black, x, y, 1, 1);
+
+                    // Update the decision parameter
+                    if (decision > 0)
+                    {
+                        y += stepY;
+                        decision -= 2 * deltaX;
+                    }
+
+                    decision += 2 * deltaY;
+                    x += stepX;
+                }
+            }
+            else
+            {
+                // Set the initial value for the decision parameter
+                decision = 2 * deltaX - deltaY;
+
+                // Loop through the points along the y axis
+                for (int i = 0; i <= deltaY; i++)
+                {
+                    // Draw the current point
+                    g.FillRectangle(brush, x, y, 1, 1);
+
+                    // Update the decision parameter
+                    if (decision > 0)
+                    {
+                        x += stepX;
+                        decision -= 2 * deltaY;
+                    }
+
+                    decision += 2 * deltaX;
+                    y += stepY;
+                }
+            }
+        }
+
+            private void Form1_MouseDown(object sender, MouseEventArgs e)
+            {
             Graphics g = pictureBox1.CreateGraphics();
 
             if (e.Button == MouseButtons.Right)
@@ -280,7 +357,7 @@ namespace KoolBadmaevLab2
                 }
                 else if (rbBrizenhemPlus.Checked)
                 {
-                    for (int i = 0; i < points.Count; i++)
+                    for (int i = 0; i < points.Count - 1; i++)
                     {
                         DrawWuLine(g, ColorLine, points[i].X, points[i].Y, points[i + 1].X, points[i + 1].Y);
                     }
@@ -326,16 +403,19 @@ namespace KoolBadmaevLab2
             }
 
             _model = new CSpline(spline);
-
-            vScrollBar1.Value = 0;
-            vScrollBar2.Value = 0;
-
             if (points.Count > 1)
             {
                 SetD1ToModel();
                 GetDerivatesFromModel();
                 Draw();
             }
+        }
+
+        private void btnSelectColor_Click_1(object sender, EventArgs e)
+        {
+            colorDialog1.ShowDialog();
+            ColorLine = colorDialog1.Color;
+            pictureBox2.BackColor = ColorLine;
         }
     }
 }

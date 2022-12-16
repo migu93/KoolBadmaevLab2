@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
-            this.vScrollBar2 = new System.Windows.Forms.VScrollBar();
             this.txtArray = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.btnSelectColor = new System.Windows.Forms.Button();
@@ -63,22 +61,6 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown_1);
             // 
-            // vScrollBar1
-            // 
-            this.vScrollBar1.Location = new System.Drawing.Point(3, 21);
-            this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(26, 376);
-            this.vScrollBar1.TabIndex = 1;
-            this.vScrollBar1.ValueChanged += new System.EventHandler(this.vScrollBar1_ValueChanged);
-            // 
-            // vScrollBar2
-            // 
-            this.vScrollBar2.Location = new System.Drawing.Point(912, 21);
-            this.vScrollBar2.Name = "vScrollBar2";
-            this.vScrollBar2.Size = new System.Drawing.Size(26, 376);
-            this.vScrollBar2.TabIndex = 2;
-            this.vScrollBar2.ValueChanged += new System.EventHandler(this.vScrollBar2_ValueChanged);
-            // 
             // txtArray
             // 
             this.txtArray.Location = new System.Drawing.Point(32, 403);
@@ -107,6 +89,7 @@
             this.btnSelectColor.TabIndex = 5;
             this.btnSelectColor.Text = "Выбрать цвет";
             this.btnSelectColor.UseVisualStyleBackColor = true;
+            this.btnSelectColor.Click += new System.EventHandler(this.btnSelectColor_Click_1);
             // 
             // pictureBox2
             // 
@@ -138,7 +121,6 @@
             this.rbBrizenhemPlus.TabIndex = 8;
             this.rbBrizenhemPlus.Text = "Сглаженная линия";
             this.rbBrizenhemPlus.UseVisualStyleBackColor = true;
-            this.rbBrizenhemPlus.Visible = false;
             // 
             // rbCurveBize
             // 
@@ -247,8 +229,6 @@
             this.Controls.Add(this.btnSelectColor);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.txtArray);
-            this.Controls.Add(this.vScrollBar2);
-            this.Controls.Add(this.vScrollBar1);
             this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -263,8 +243,6 @@
         #endregion
 
         private PictureBox pictureBox1;
-        private VScrollBar vScrollBar1;
-        private VScrollBar vScrollBar2;
         private TextBox txtArray;
         private Button button1;
         private Button btnSelectColor;
