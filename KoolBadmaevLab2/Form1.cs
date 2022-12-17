@@ -22,8 +22,7 @@ namespace KoolBadmaevLab2
         }
 
         //Статический метод, реализующий отрисовку 4-связной линии
-        static public void Bresenham4Line(Graphics g, Color clr, int x0, int y0,
-                                                                 int x1, int y1)
+        static public void BresenhamLine(Graphics g, Color clr, int x0, int y0,int x1, int y1)
         {
             //Изменения координат
             int dx = (x1 > x0) ? (x1 - x0) : (x0 - x1);
@@ -76,11 +75,6 @@ namespace KoolBadmaevLab2
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             Graphics g = pictureBox1.CreateGraphics();
@@ -99,81 +93,6 @@ namespace KoolBadmaevLab2
                 rbCurveBize.Checked = false;
                 rbBizeN.Checked = true;
             }
-        }
-
-        public void DrawWuLine(Graphics g, Color clr, int x0, int y0, int x1, int y1)
-        {
-            //Вычисление изменения координат
-            int dx = (x1 > x0) ? (x1 - x0) : (x0 - x1);
-            int dy = (y1 > y0) ? (y1 - y0) : (y0 - y1);
-            //Если линия параллельна одной из осей, рисуем обычную линию - заполняем все пикселы в ряд
-            if (dx == 0 || dy == 0)
-            {
-                g.DrawLine(new Pen(clr), x0, y0, x1, y1);
-                return;
-            }
-
-            //Для Х-линии (коэффициент наклона < 1)
-            if (true)
-            {
-                //Первая точка должна иметь меньшую координату Х
-                if (x1 < x0)
-                {
-                    x1 += x0; x0 = x1 - x0; x1 -= x0;
-                    y1 += y0; y0 = y1 - y0; y1 -= y0;
-                }
-                //Относительное изменение координаты Y
-                float grad = (float)dy / dx;
-                //Промежуточная переменная для Y
-                float intery = y0 + grad;
-                //Первая точка
-                PutPixel(g, clr, x0, y0, 255);
-
-                for (int x = x0 + 1; x < x1; x++)
-                {
-                    //Верхняя точка
-                    PutPixel(g, clr, x, RasterAlgorithms.IPart(intery), (int)(255 - RasterAlgorithms.FPart(intery) * 255));
-                    //Нижняя точка
-                    PutPixel(g, clr, x, RasterAlgorithms.IPart(intery) + 1, (int)(RasterAlgorithms.FPart(intery) * 255));
-                    //Изменение координаты Y
-                    intery += grad;
-                }
-                //Последняя точка
-                PutPixel(g, clr, x1, y1, 255);
-            }
-            //Для Y-линии (коэффициент наклона > 1)
-            else
-            {
-                //Первая точка должна иметь меньшую координату Y
-                if (y1 < y0)
-                {
-                    x1 += x0; x0 = x1 - x0; x1 -= x0;
-                    y1 += y0; y0 = y1 - y0; y1 -= y0;
-                }
-                //Относительное изменение координаты X
-                float grad = (float)dx / dy;
-                //Промежуточная переменная для X
-                float interx = x0 + grad;
-                //Первая точка
-                PutPixel(g, clr, x0, y0, 255);
-
-                for (int y = y0 + 1; y < y1; y++)
-                {
-                    //Верхняя точка
-                    PutPixel(g, clr, RasterAlgorithms.IPart(interx), y, 255 - (int)(RasterAlgorithms.FPart(interx) * 255));
-                    //Нижняя точка
-                    PutPixel(g, clr, RasterAlgorithms.IPart(interx) + 1, y, (int)(RasterAlgorithms.FPart(interx) * 255));
-                    //Изменение координаты X
-                    interx += grad;
-                }
-                //Последняя точка
-                PutPixel(g, clr, x1, y1, 255);
-            }
-
-        }
-        public void PutPixel2(Graphics g, Color color, int x, int y, int alpha)
-        {
-
         }
 
         #region Splines
@@ -202,34 +121,6 @@ namespace KoolBadmaevLab2
             pictureBox1.Image = bmp;
         }
         #endregion
-
-        private void vScrollBar1_ValueChanged(object sender, EventArgs e)
-        {
-            if (_model != null && points.Count > 1)
-            {
-                SetD1ToModel();
-                GetDerivatesFromModel();
-                Draw();
-            }
-        }
-
-        private void vScrollBar2_ValueChanged(object sender, EventArgs e)
-        {
-            if (_model != null && points.Count > 1)
-            {
-                SetD1ToModel();
-                GetDerivatesFromModel();
-                Draw();
-            }
-        }
-
-        private void btnSelectColor_Click(object sender, EventArgs e)
-        {
-            colorDialog1.ShowDialog();
-            ColorLine = colorDialog1.Color;
-            pictureBox2.BackColor = ColorLine;
-        }
-
         private void pictureBox2_BackColorChanged(object sender, EventArgs e)
         {
             CSplineSubinterval.ColorLine = ColorLine;
@@ -239,11 +130,6 @@ namespace KoolBadmaevLab2
                 GetDerivatesFromModel();
                 Draw();
             }
-        }
-
-        private void rbBizeN_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void pictureBox1_MouseDown_1(object sender, MouseEventArgs e)
@@ -341,8 +227,73 @@ namespace KoolBadmaevLab2
                 }
             }
         }
+        private void DrawLineS(int x1, int y1, int x2, int y2)
+        {
+            // Initialize a Bitmap object with the desired width and height
+            Bitmap bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
 
-            private void Form1_MouseDown(object sender, MouseEventArgs e)
+            // Calculate the slope of the line
+            float slope = (float)(y2 - y1) / (x2 - x1);
+
+            // Iterate through each pixel on the line
+            for (int x = x1; x <= x2; x++)
+            {
+                // Determine the y-coordinate of the pixel using the slope
+                int y = (int)(slope * (x - x1) + y1);
+
+                // Use an anti-aliasing algorithm to smooth the line
+                Color color = AntiAliasing(x, y, bmp);
+
+                // Set the pixel color for the current pixel
+                bmp.SetPixel(x, y, color);
+            }
+
+            // Display the Bitmap object on the PictureBox control
+            pictureBox1.Image = bmp;
+        }
+
+        private Color AntiAliasing(int x, int y, Bitmap bmp)
+        {
+            // Initialize the sum of the red, green, and blue values to 0
+            int redSum = 0;
+            int greenSum = 0;
+            int blueSum = 0;
+
+            // Initialize the total weight to 0
+            int totalWeight = 0;
+
+            // Iterate through the surrounding pixels
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    // Calculate the distance of the current pixel from the center pixel
+                    float distance = (float)Math.Sqrt(i * i + j * j);
+
+                    // Calculate the weight of the current pixel based on its distance from the center
+                    float weight = 1.0f / (1.0f + distance);
+
+                    // Add the weighted values of the red, green, and blue channels to the sums
+                    redSum += (int)(bmp.GetPixel(x + i, y + j).R * weight);
+                    greenSum += (int)(bmp.GetPixel(x + i, y + j).G * weight);
+                    blueSum += (int)(bmp.GetPixel(x + i, y + j).B * weight);
+
+                    // Add the weight of the current pixel to the total weight
+                    totalWeight += (int)weight;
+                }
+            }
+
+            // Calculate the weighted average values for the red, green, and blue channels
+            int red = (int)(redSum / totalWeight);
+            int green = (int)(greenSum / totalWeight);
+            int blue = (int)(blueSum / totalWeight);
+
+            // Return the resulting color
+            return Color.FromArgb(red, green, blue);
+        }
+
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
             {
             Graphics g = pictureBox1.CreateGraphics();
 
@@ -352,14 +303,14 @@ namespace KoolBadmaevLab2
                 {
                     for (int i = 0; i < points.Count - 1; i++)
                     {
-                        Bresenham4Line(g, ColorLine, points[i].X, points[i].Y, points[i + 1].X, points[i + 1].Y);
+                        BresenhamLine(g, ColorLine, points[i].X, points[i].Y, points[i + 1].X, points[i + 1].Y);
                     }
                 }
                 else if (rbBrizenhemPlus.Checked)
                 {
                     for (int i = 0; i < points.Count - 1; i++)
                     {
-                        DrawWuLine(g, ColorLine, points[i].X, points[i].Y, points[i + 1].X, points[i + 1].Y);
+                        DrawLineS(points[i].X, points[i].Y, points[i + 1].X, points[i + 1].Y);
                     }
                 }
                 // Кривая по 4 точкам
